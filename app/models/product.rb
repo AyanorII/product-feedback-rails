@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   belongs_to :user
+  has_many :comments
 
   STATUSES = %i[planned live in_progress suggestion].freeze
   CATEGORIES = %i[ui ux enhancement bug feature].freeze
