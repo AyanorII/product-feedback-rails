@@ -1,7 +1,97 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+require 'json'
+require 'faker'
+class Seeder
+  def initialize
+    serialized_data = File.read('db/data.json')
+    @data = JSON.parse(serialized_data)
+  end
+
+  def run
+    clear_database(User, Comment, Product)
+    seed_users
+    seed_products
+  end
+
+  private
+
+  def clear_database(*models)
+    puts 'Cleaning database...'
+
+    models.each do |model|
+      record_count = model.count
+      model.destroy_all
+      puts "Destroyed #{record_count} #{model.to_s.downcase.pluralize}!"
+    end
+
+    puts 'Finished cleaning database!'
+  end
+
+  def seed_users
+    puts ''
+    puts 'Creating users...'
+
+    10.times do
+      user =
+        User.create!(
+          email: Faker::Internet.email,
+          password: Faker::Internet.password,
+          username: Faker::Internet.username,
+          name: Faker::Name.name,
+          photo: Faker::Avatar.image,
+        )
+
+      puts "Created user: #{user.username}"
+    end
+
+    puts "Finished seeding users. #{User.count} users created!"
+  end
+
+  def create_product(data)
+    Product.create!(
+      title: data['title'],
+      description: data['description'],
+      status: data['status'].underscore.to_sym,
+      category: data['category'].to_sym,
+      upvotes: data['upvotes'],
+      user: User.all.sample,
+    )
+  end
+
+  def create_comment(content, product)
+    Comment.create!(content: content, product: product, user: User.all.sample)
+  end
+
+  def seed_comments(comments, product)
+    puts ''
+    puts "Creating comments for product: #{product.title}..."
+
+    comments.each do |product_comment|
+      create_comment(product_comment['content'], product)
+
+      puts 'Created comment'
+
+      replies = product_comment['replies']
+      replies&.each do |reply|
+        create_comment(reply, product)
+
+        puts 'Created reply'
+      end
+    end
+  end
+
+  def seed_products
+    puts ''
+    puts 'Seeding products...'
+
+    @data.each do |product_request|
+      product = create_product(product_request)
+      comments = product_request['comments']
+      seed_comments(comments, product) if comments
+    end
+
+    puts "Finished seeding products. #{Product.count} products created"
+  end
+end
+
+seeder = Seeder.new
+seeder.run
