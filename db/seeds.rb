@@ -57,22 +57,30 @@ class Seeder
     )
   end
 
-  def create_comment(content, product)
-    Comment.create!(content: content, product: product, user: User.all.sample)
+  def create_comment(content, product, parent = nil)
+    if parent
+      Comment.create!(
+        content: content,
+        product: product,
+        user: User.all.sample,
+        parent: parent,
+      )
+    else
+      Comment.create!(content: content, product: product, user: User.all.sample)
+    end
   end
 
   def seed_comments(comments, product)
-    puts ''
-    puts "Creating comments for product: #{product.title}..."
+    puts "\nCreating comments for product: #{product.title}..."
 
     comments.each do |product_comment|
-      create_comment(product_comment['content'], product)
+      created_comment = create_comment(product_comment['content'], product)
 
       puts 'Created comment'
 
       replies = product_comment['replies']
       replies&.each do |reply|
-        create_comment(reply, product)
+        create_comment(reply['content'], product, created_comment)
 
         puts 'Created reply'
       end
