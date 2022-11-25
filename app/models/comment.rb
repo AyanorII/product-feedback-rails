@@ -10,5 +10,5 @@ class Comment < ApplicationRecord
            foreign_key: 'parent_id',
            dependent: :destroy
 
-  validates :content, presence: true
+  validates :content, presence: true, length: { maximum: 250 }
 end
