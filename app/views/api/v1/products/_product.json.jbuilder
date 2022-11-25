@@ -8,4 +8,4 @@ json.extract! product,
               :updated_at,
               :user_id
 json.status product.status.dasherize
-json.comment_count product.comments.length
+json.comments_count product.comments.length
