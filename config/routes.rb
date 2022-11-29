@@ -11,6 +11,7 @@ Rails.application.routes.draw do
           get 'in-progress'
         end
         member { patch :upvote }
+        resources :comments, only: :index
       end
     end
   end
