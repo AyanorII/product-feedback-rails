@@ -4,7 +4,8 @@ json.extract! comment,
               # :user,
               :parent_id,
               :created_at,
-              :updated_at
+              :updated_at,
+              :replying_to
 
 json.user { json.extract! comment.user, :id, :username, :name, :photo }
 
@@ -16,7 +17,8 @@ json.replies do
                   :content,
                   :parent_id,
                   :created_at,
-                  :updated_at
+                  :updated_at,
+                  :replying_to,
+                  :user
   end
-  # json.user { json.extract! reply.user, :username, :name, :photo }
 end

@@ -8,6 +8,7 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def show
+    @comments = Comment.where(product: @product, parent: nil)
     render :show
   end
 

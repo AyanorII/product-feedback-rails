@@ -69,7 +69,7 @@ class Seeder
         product: attr[:product],
         user: User.find_by(username: attr[:user]),
         parent: attr[:parent],
-        replying_to: User.find_by(username: attr[:replying_to]),
+        replying_to: attr[:replying_to],
       )
     else
       Comment.create!(
